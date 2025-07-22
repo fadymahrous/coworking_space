@@ -1,0 +1,12 @@
+2025-07-21 02:37:39,239 - ERROR - [views] - Error fetching cart items for user reem: Got AttributeError when attempting to get a value for field `item_description` on serializer `TofaProductsRepositorySeializer`.
+The serializer field might be named incorrectly and not match any attribute or key on the `TofaProductsOrder` instance.
+Original exception text was: 'TofaProductsOrder' object has no attribute 'item_description'.
+2025-07-21 02:52:02,838 - ERROR - [views] - Error deserializing cart item data: duplicate key value violates unique constraint "unique_item_incart"
+DETAIL:  Key (item_name_id, user_id, status, order_number)=(Cappuccino Caramel, 13, INCart_Pending, 0) already exists.
+
+2025-07-21 02:54:07,374 - ERROR - [views] - Error deserializing cart item data: duplicate key value violates unique constraint "unique_item_incart"
+DETAIL:  Key (item_name_id, user_id, status, order_number)=(Cappuccino Caramel, 13, INCart_Pending, 0) already exists.
+
+2025-07-21 04:08:57,148 - INFO - [views] - Cart item deleted successfully for user.
+2025-07-21 04:09:50,194 - INFO - [views] - Cart item deleted successfully for user.
+2025-07-21 21:31:33,747 - INFO - [views] - Cart submitted for preparation by reem with 3 items.

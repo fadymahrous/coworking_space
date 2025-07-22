@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Menu</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .messages {
+      margin-bottom: 20px;
+    }
+
+    .message {
+      background-color: #e0ffe0;
+      border: 1px solid #90ee90;
+      padding: 10px;
+      margin-bottom: 5px;
+      border-radius: 4px;
+    }
+
+      /* Cart Icon */
+    .cart-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+  }
+
+  .cart-icon {
+    font-size: 40px; /* bigger icon */
+    color: #333;
+    text-decoration: none;
+    position: relative;
+  }
+
+  .cart-badge {
+    position: absolute;
+    top: -10px;
+    right: -12px;
+    background: red;
+    color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+
+    /* Menu Header Buttons */
+    .menu-header-form {
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .menu-header-form button {
+      padding: 12px 20px;
+      background: linear-gradient(145deg, #4facfe, #00f2fe);
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, background 0.3s;
+    }
+
+    .menu-header-form button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(145deg, #00f2fe, #4facfe);
+    }
+
+    /* Sub Menu Items */
+    .sub-menu-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .sub-menu-item {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 220px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .item-name {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+    }
+
+    .item-price {
+      color: #27ae60;
+      margin-bottom: 8px;
+    }
+
+    .item-description {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 12px;
+      text-align: center;
+    }
+
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .quantity-controls button {
+      width: 32px;
+      height: 32px;
+      font-size: 18px;
+      background-color: #ddd;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .quantity-controls input {
+      width: 50px;
+      text-align: center;
+      margin: 0 5px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .add-to-cart-button {
+      background-color: #2ecc71;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .add-to-cart-button:hover {
+      background-color: #27ae60;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cart Icon -->
+  <a href="{% url 'user_home:cart' %}" class="cart-container" title="View Cart">
+    <i class="fas fa-shopping-cart cart-icon"></i>
+    {% if items_in_cart > 0 %}
+      <span class="cart-badge">{{ items_in_cart }}</span>
+    {% endif %}
+  </a>
+
+  <!-- Messages -->
+  <div class="messages">
+    {% for message in messages %}
+      <div class="message">{{ message }}</div>
+    {% endfor %}
+  </div>
+
+  <!-- Menu Headers -->
+  <form method="GET" class="menu-header-form">
+    {% for menue_header in menue_headers %}
+      <button type="submit" name="submenue" value="{{ menue_header.sub_category }}">
+        {{ menue_header.sub_category }}
+      </button>
+    {% endfor %}
+  </form>
+
+  <!-- Sub Menu Items -->
+  <div class="sub-menu-grid">
+    {% for sub_menue in sub_menues %}
+      <div class="sub-menu-item">
+        <div class="item-name">{{ sub_menue.item_name }}</div>
+        <div class="item-price">€{{ sub_menue.price }}</div>
+        <div class="item-description">{{ sub_menue.item_description }}</div>
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="quantity-controls">
+            <button type="button" onclick="decreaseQty('{{ sub_menue.item_name }}')">-</button>
+            <input id="qty-{{ sub_menue.item_name }}" name="quantity" type="number" value="1" min="1" />
+            <button type="button" onclick="increaseQty('{{ sub_menue.item_name }}')">+</button>
+          </div>
+
+          <input type="hidden" name="item_name" value="{{ sub_menue.item_name }}" />
+          <button type="submit" class="add-to-cart-button" name="action" value="add_to_cart">
+            Add to Cart
+          </button>
+        </form>
+      </div>
+    {% endfor %}
+  </div>
+
+  <script>
+    function increaseQty(itemName) {
+      const input = document.getElementById("qty-" + itemName);
+      input.value = parseInt(input.value) + 1;
+    }
+
+    function decreaseQty(itemName) {
+      const input = document.getElementById("qty-" + itemName);
+      if (parseInt(input.value) > 1) {
+        input.value = parseInt(input.value) - 1;
+      }
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Kitchen War Room</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f0f2f5;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+      margin-bottom: 30px;
+    }
+
+    .messages {
+      margin: 0 auto 20px;
+      max-width: 800px;
+    }
+
+    .message {
+      padding: 12px 20px;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+
+    .message.success {
+      background-color: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .message.error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .message.info {
+      background-color: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+
+    .order-group {
+      background: white;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+
+    .order-items p {
+      margin: 5px 0;
+      font-size: 15px;
+    }
+
+    .finish-btn {
+      background-color: #27ae60;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .finish-btn:hover {
+      background-color: #219150;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Kitchen War Room</h1>
+
+<!-- Django Messages -->
+<div class="messages">
+  {% for message in messages %}
+    <div class="message {{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+</div>
+
+
+{% regroup orders by table_number as table_groups %}
+
+{% for table in table_groups %}
+  <h3>Table Number: {{ table.grouper }}</h3>
+
+  {% regroup table.list by order_number.id as order_groups %}
+
+  {% for order_group in order_groups %}
+    <h4>Order ID: {{ order_group.grouper }}</h4>
+
+    <form method="post" action="{% url 'worker_home:ongoing_orders' %}">
+      {% csrf_token %}
+      <table border="1">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Count</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in order_group.list %}
+          <tr>
+            <td>{{ order.item_name }}</td>
+            <td>{{ order.count }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <input type="hidden" name="order_number" value="{{ order_group.grouper }}">
+      <button type="submit">Submit Order #{{ order_group.grouper }}</button>
+    </form>
+    <br>
+  {% endfor %}
+{% endfor %}
+
+
+</body>
+</html>

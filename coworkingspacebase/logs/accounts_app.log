@@ -1,0 +1,12 @@
+2025-07-14 13:32:13,263 - ERROR - [Get_Username_Object] - User: 33 not exist as registerd email or username, the folowing exception was raised User matching query does not exist.
+2025-07-14 13:39:52,090 - ERROR - [Get_Username_Object] - User: fadyy not exist as registerd email or username, the folowing exception was raised User matching query does not exist.
+2025-07-14 14:24:20,739 - ERROR - [Get_Username_Object] - User: we not exist as registerd email or username, the folowing exception was raised User matching query does not exist.
+2025-07-14 14:25:26,111 - ERROR - [Get_Username_Object] - User: wwe not exist as registerd email or username, the folowing exception was raised User matching query does not exist.
+2025-07-20 20:33:18,893 - ERROR - [views] - Error creating user: duplicate key value violates unique constraint "accounts_app_user_username_key"
+DETAIL:  Key (username)=(reem) already exists.
+
+2025-07-20 20:34:01,714 - ERROR - [views] - Error creating user: duplicate key value violates unique constraint "accounts_app_user_username_key"
+DETAIL:  Key (username)=(reem) already exists.
+
+2025-07-21 02:19:31,645 - INFO - [views] - Attempting to create user with data: <QueryDict: {'refresh': ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc1MzEzMTE5MCwiaWF0IjoxNzUzMDQ0NzkwLCJqdGkiOiIxOWM1OGFkYWUxNmM0NzdmOWQ4OTFlYTQ4Njk0Njg2MyIsInVzZXJfaWQiOjEzfQ.C-8vBCq21y5iAL_BSasJlG3Ez_iimXBY8FcCm6EJnxQ']}>
+2025-07-21 02:19:31,647 - ERROR - [views] - Error creating user: {'username': [ErrorDetail(string='This field is required.', code='required')], 'email': [ErrorDetail(string='This field is required.', code='required')], 'password': [ErrorDetail(string='This field is required.', code='required')], 'phonenumber': [ErrorDetail(string='This field is required.', code='required')]}
