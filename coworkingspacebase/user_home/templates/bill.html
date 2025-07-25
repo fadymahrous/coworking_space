@@ -1,92 +1,303 @@
+{% extends 'base.html'%}
 {% load math_filters %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Pending Bills</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #f4f4f8;
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
+{% block extrajava%}
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-    h1, h2 {
-      text-align: center;
-      color: #4a4a4a;
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    min-height: 100vh;
+    color: #334155;
+    line-height: 1.6;
+    padding: 2rem;
+  }
+
+  .bill-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(203, 213, 225, 0.3);
+    border-radius: 2rem;
+    padding: 3rem;
+    box-shadow: 0 25px 50px rgba(100, 116, 139, 0.1);
+  }
+
+  h1 {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #64748b, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .order-group {
+    background: rgba(248, 250, 252, 0.6);
+    border: 1px solid rgba(203, 213, 225, 0.2);
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  .order-group:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(100, 116, 139, 0.1);
+  }
+
+  .order-header {
+    background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.3);
+  }
+
+  .order-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .order-badge {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .items-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .items-table thead {
+    background: rgba(203, 213, 225, 0.2);
+  }
+
+  .items-table th {
+    padding: 1rem 1.5rem;
+    text-align: left;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    border-bottom: 2px solid rgba(203, 213, 225, 0.3);
+  }
+
+  .items-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid rgba(203, 213, 225, 0.2);
+    transition: background-color 0.2s ease;
+  }
+
+  .items-table tbody tr:hover {
+    background: rgba(203, 213, 225, 0.1);
+  }
+
+  .item-name {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .quantity {
+    font-weight: 600;
+    color: #64748b;
+    text-align: center;
+    background: rgba(100, 116, 139, 0.1);
+    border-radius: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    display: inline-block;
+    min-width: 2rem;
+  }
+
+  .unit-price, .item-total {
+    font-weight: 600;
+    color: #475569;
+    text-align: right;
+  }
+
+  .order-subtotal {
+    background: rgba(100, 116, 139, 0.1);
+    padding: 1rem 2rem;
+    text-align: right;
+    font-weight: 700;
+    color: #475569;
+    font-size: 1.1rem;
+    border-top: 2px solid rgba(100, 116, 139, 0.2);
+  }
+
+  .grand-total {
+    background: linear-gradient(135deg, #64748b, #475569);
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    border-radius: 1.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 10px 30px rgba(100, 116, 139, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .grand-total::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  .total-label {
+    font-size: 1rem;
+    opacity: 0.9;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .total-amount {
+    font-size: 2.2rem;
+    font-weight: 900;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .order-group:nth-child(2) { animation-delay: 0.1s; }
+  .order-group:nth-child(3) { animation-delay: 0.2s; }
+  .order-group:nth-child(4) { animation-delay: 0.3s; }
+
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    body {
+      padding: 1rem;
     }
 
     .bill-container {
-      max-width: 700px;
-      margin: auto;
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      padding: 2rem 1.5rem;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 2rem;
     }
 
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
+    .items-table th,
+    .items-table td {
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
     }
 
-    th {
-      background-color: #f8f8f8;
-      color: #555;
+    .grand-total {
+      padding: 1.5rem;
+      font-size: 1.5rem;
     }
 
-    tr:hover {
-      background-color: #f1f1f1;
+    .total-amount {
+      font-size: 1.8rem;
     }
+  }
 
-    .total {
-      text-align: right;
-      font-size: 1.2em;
-      font-weight: bold;
-      padding-top: 20px;
+  /* Print styles */
+  @media print {
+    body {
+      background: white;
     }
-  </style>
-</head>
-<body>
-  <div class="bill-container">
-    <h1>Pending Bills</h1>
+    
+    .bill-container {
+      box-shadow: none;
+      border: 1px solid #ccc;
+    }
+    
+    .order-group:hover {
+      transform: none;
+      box-shadow: none;
+    }
+  }
+</style>
+{%endblock%}
 
-    <table>
-      <thead>
-        <tr>
-          <th>Item Name</th>
-          <th>Quantity</th>
-          <th>Unit Price</th>
-          <th>Order Number</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for item_to_be_charged in items_to_be_charged %}
-        <tr>
-          <td>{{ item_to_be_charged.item_name }}</td>
-          <td>{{ item_to_be_charged.count }}</td>
-          <td>{{ item_to_be_charged.item_name.price }}</td>
-          <td>{{ item_to_be_charged.order_number.id }}</td>
-          <td>{{ item_to_be_charged.count|multiply:item_to_be_charged.item_name.price }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+{% block body%}
 
-    <div class="total">
-      Total Amount: €{{ total_bill_value }}
+<div class="bill-container">
+  <h1>Pending Bills</h1>
+  
+  {% regroup items_to_be_charged by order_number as grouped_orders %}
+  {% for order_group in grouped_orders %}
+    <div class="order-group">
+      <div class="order-header">
+        <div class="order-number">
+          <span>Order</span>
+          <span class="order-badge">#{{ order_group.grouper.id }}</span>
+        </div>
+      </div>
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Item Name</th>
+            <th>Quantity</th>
+            <th>Unit Price</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item_to_be_charged in order_group.list %}
+          <tr>
+            <td class="item-name">{{ item_to_be_charged.item_name }}</td>
+            <td><span class="quantity">{{ item_to_be_charged.count }}</span></td>
+            <td class="unit-price">€{{ item_to_be_charged.item_name.price }}</td>
+            <td class="item-total">€{{ item_to_be_charged.count|multiply:item_to_be_charged.item_name.price }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <div class="order-subtotal">
+        Order #{{ order_group.grouper.id }} Subtotal: €{% for item in order_group.list %}{{ item.count|multiply:item.item_name.price }}{% if not forloop.last %} + {% endif %}{% endfor %}
+      </div>
     </div>
+  {% endfor %}
+
+  <div class="grand-total">
+    <div class="total-label">Total Amount</div>
+    <div class="total-amount">€{{ total_bill_value }}</div>
   </div>
-</body>
-</html>
+  <form method="POST">
+      {% csrf_token %}
+      <button type="submit" name="create_bill" value="True" class="submit-order-btn">Submit My Order</button>
+    </form>
+
+</div>
+{%endblock%}

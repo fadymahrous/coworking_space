@@ -1,4 +1,4 @@
-from django.shortcuts import render,HttpResponse
+from django.shortcuts import render,HttpResponse,redirect
 from django.http import JsonResponse
 from django.contrib.auth import authenticate, login,logout
 from helper.Get_Username_Object import GetUserObject
@@ -30,7 +30,7 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
             if user:
                 login(request, user)
-                return views.welcome(request)
+                return redirect('/home')
             else:
                 messages.error(request,"Th Password is not valid")
                 return render(request, 'login.html', {'form': form})

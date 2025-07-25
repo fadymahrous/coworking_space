@@ -1,0 +1,18 @@
+{"CATEGORY_CHOICES":{
+        "Food & Drinks": "Food & Drinks",
+        "Office Supplies": "Office Supplies",
+        "Business Services": "Business Services",
+        "Memberships & Rentals": "Memberships & Rentals",
+        "Workshops & Training": "Workshops & Training",
+        "Merchandise": "Merchandise",
+        "Opex":"Opex"},
+"SUB_CATEGORY_CHOICES":{
+        "Snacks":"Snacks",
+        "Hot Drinks":"Hot Drinks",
+        "Soft Drinks":"Soft Drinks",
+        "Sandwitches":"Sandwitches",
+        "Printer":"Printer",
+        "Meeting Room":"Meeting Room",
+        "Electricity Bill":"Electricity Bill",
+        "Internet Bill":"Internet Bill"
+}}

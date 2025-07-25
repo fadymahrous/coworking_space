@@ -10,7 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
-from watchers_app.models import TofaProductsRepository, Categorization, TofaProductsOrder,TofaProductsOrderID
+from watchers_app.models import TofaProductsRepository, Categorization, TofaProductsOrder,TofaProductsOrderID,bill_id
 from accounts_app.models import User
 from .serializers import TofaProductsRepositorySerializer, TofaProductsOrderSerializer
 from helper.Logger_Setup import setup_logger
@@ -169,14 +169,21 @@ def cart_view(request):
 
 @login_required(login_url='/login')
 def bill_view(request):
-    items_to_be_charged=TofaProductsOrder.objects.select_related('item_name','order_number').filter(user=request.user,status='Served')
+    items_to_be_charged=TofaProductsOrder.objects.select_related('item_name','order_number').filter(user=request.user,status='Served').exclude(bill_number__bill_status='SETTELLED').order_by('order_number__id')
     total_bill_value=0
     for i in items_to_be_charged:
         total_bill_value+=i.count*i.item_name.price
-    if request.method=='POST':
-        pass
+    if request.method=="POST":
+        pending_bill=bill_id.objects.filter(bill_user=request.user,bill_status__in=['CUSTOMER_REQUEST_TO_CLOSE','RETURNED_TO_CUSTOMER']).first()
+        if pending_bill:
+            messages.info(request,'Bill submitted')
+            pending_bill.bill_status='CUSTOMER_REQUEST_TO_CLOSE'
+            pending_bill.save()
+            return redirect('/home/billview/')
+        new_bill=bill_id.objects.create(bill_user=request.user,bill_value=total_bill_value,)
+        items_to_be_charged.update(bill_number=new_bill)
+        messages.info(request,'Bill submitted')
     return render(request, 'bill.html', {'items_to_be_charged':items_to_be_charged,'total_bill_value':total_bill_value})
-
 
 
 # API Views
@@ -192,9 +199,9 @@ class FoodViewAPI(APIView):
             logger.error(f"Food API error: {e}")
             return Response({'error': 'Failed to fetch items'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 class CartViewSubmitAPI(APIView):
     permission_classes = [IsAuthenticated]
-
     @transaction.atomic
     def post(self, request):
         items=TofaProductsOrder.objects.filter(user=request.user, status='INCart_Pending')
@@ -258,7 +265,7 @@ class CartViewAPI(APIView):
                     logger.error(f"Add error for {request.user.username} item {serializer.validated_data['item_name']}: {e}")
                     return Response({'error': 'failed to add Item'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
                 return Response({'message': 'Item added to cart'}, status=status.HTTP_201_CREATED)
-            
+
 
     def delete(self, request):
         item_name = request.data.get('item_name')
