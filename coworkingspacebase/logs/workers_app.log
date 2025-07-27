@@ -1,0 +1,12 @@
+2025-07-27 01:48:10,004 - ERROR - [views] - Failed to Server Order to customer, Details:type object 'datetime.timezone' has no attribute 'now'
+2025-07-27 04:35:51,042 - ERROR - [services] - This Order not exist, Details:TofaProductsOrderID matching query does not exist.
+2025-07-27 04:35:51,042 - ERROR - [views] - Failed to Server Order to customer, Details:TofaProductsOrderID matching query does not exist.
+2025-07-27 04:51:17,637 - INFO - [services] - Bill with ID 7 approved and status set to SETTELLED.
+2025-07-27 04:51:17,655 - INFO - [services] - Updated 1 related orders to PAID_Closed for bill ID 7.
+2025-07-28 00:00:36,468 - INFO - [services] - Bill with ID 8 approved and status set to SETTELLED.
+2025-07-28 00:00:36,487 - INFO - [services] - Updated 4 related orders to PAID_Closed for bill ID 8.
+2025-07-28 01:28:52,582 - INFO - [services] - Bill with ID 10 returned to customer.
+2025-07-28 01:43:37,991 - INFO - [services] - Bill with ID 10 returned to customer.
+2025-07-28 01:43:49,001 - INFO - [services] - Bill with ID 10 returned to customer.
+2025-07-28 01:44:07,867 - INFO - [services] - Bill with ID 10 approved and status set to SETTELLED.
+2025-07-28 01:44:07,895 - INFO - [services] - Updated 2 related orders to PAID_Closed for bill ID 10.

@@ -55,13 +55,6 @@ class TofaProductsRepository(models.Model):
             models.UniqueConstraint(fields=['item_name', 'category','brand'], name='product_uniqueness')
         ]
 
-class TofaProductsOrderID(models.Model):
-    order_creation_time = models.DateTimeField(auto_now_add=True)
-    user = models.ForeignKey(User, on_delete=models.SET('Deleted'))
-
-    def __str__(self):
-        return f"{self.user}-{self.order_creation_time}"
-
 class bill_id(models.Model):
     STATUS=[
         ('CUSTOMER_REQUEST_TO_CLOSE','CUSTOMER_REQUEST_TO_CLOSE'),
@@ -76,25 +69,34 @@ class bill_id(models.Model):
     def __str__(self):
         return f"bill Amount={self.bill_value} User={self.bill_user}"
     
-class TofaProductsOrder(models.Model):
+
+
+class TofaProductsOrderID(models.Model):
     ORDER_STATUS = [
-        ('INCart_Pending', 'INCart_Pending'),
         ('INPreparation', 'INPreparation'),
         ('Served', 'Served'),
         ('PAID_Closed', 'PAID_Closed')
     ]
-    item_name = models.ForeignKey(TofaProductsRepository, on_delete=models.SET('Deleted'))
-    user = models.ForeignKey(User, on_delete=models.SET('Deleted'))
-    status = models.CharField(max_length=20, choices=ORDER_STATUS, db_index=True,default='INCart_Pending')
-    placed_in_cart_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    status = models.CharField(max_length=20, choices=ORDER_STATUS, db_index=True,default='INPreparation')
+    order_creation_time = models.DateTimeField(auto_now_add=True)
     fullfilled_at = models.DateTimeField(blank=True, null=True)
-    count=models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.SET('Deleted'))
     table_number=models.IntegerField(null=True,blank=True)
-    order_number = models.ForeignKey(TofaProductsOrderID, on_delete=models.SET('Deleted'), null=True, blank=True)
     bill_number=models.ForeignKey(bill_id, on_delete=models.SET('Deleted'), null=True, blank=True)
 
     def __str__(self):
-        return f"Order({self.status}) of {self.item_name.item_name} by {self.user}"
+        return f"{self.user.username}-{self.order_creation_time}"
+
+
+class TofaProductsOrder(models.Model):
+    item_name = models.ForeignKey(TofaProductsRepository, on_delete=models.SET('Deleted'))
+    user = models.ForeignKey(User, on_delete=models.SET('Deleted'))
+    placed_in_cart_at = models.DateTimeField(auto_now_add=True,blank=True, null=True)
+    count=models.IntegerField()
+    order_number = models.ForeignKey(TofaProductsOrderID, on_delete=models.SET('Deleted'), null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.item_name.item_name} by {self.user}"
 
 class Meta:
     constraints = [

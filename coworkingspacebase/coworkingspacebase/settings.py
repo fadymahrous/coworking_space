@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 from configparser import ConfigParser
 from os import path
+from datetime import timedelta
+
 
 config=ConfigParser()
 config.read(path.join('..','config','config.ini'))
@@ -148,3 +150,11 @@ REST_FRAMEWORK = {
         #'rest_framework.renderers.BrowsableAPIRenderer',
         ],  # or your site-wide default
 }
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+    }

@@ -288,8 +288,7 @@
 
 <div class="container">
         <div class="header">
-            <h1>Bill Management System</h1>
-            <p>Manage and approve bills efficiently</p>
+            <h3>Manage and approve bills efficiently</h3>
         </div>
 
         <div class="main-content">
@@ -307,7 +306,7 @@
                                 </div>
                                 <form method="POST">
                                     {% csrf_token %}
-                                    <button type="submit" name="bill_id" value="{{bill.id}}" class="btn btn-primary">
+                                    <button type="submit" name="bill_id" value="{{bill.pk}}" class="btn btn-primary">
                                         View Details
                                     </button>
                                 </form>
@@ -359,10 +358,10 @@
                         {% for user in users_in_the_hall %}
                             <div class="user-card">
                                 <div class="user-icon">
-                                    {{user.user__username|first|upper}}
+                                    {{user.username|first|upper}}
                                 </div>
                                 <div style="margin-bottom: 10px; font-weight: 600; color: #2d3748;">
-                                    {{user.user__username}}
+                                    {{user.username}}
                                 </div>
                                 <form method="POST">
                                     {% csrf_token %}

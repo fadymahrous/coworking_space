@@ -300,7 +300,7 @@
           <input id="qty-{{ sub_menue.item_name }}" name="quantity" type="number" value="1" min="1" />
           <button type="button" onclick="increaseQty('{{ sub_menue.item_name }}')">+</button>
         </div>
-        <input type="hidden" name="item_name" value="{{ sub_menue.item_name }}" />
+        <input type="hidden" name="item_id" value="{{ sub_menue.pk }}" />
         <button type="submit" class="add-to-cart-button" name="action" value="add_to_cart">
           Add to Cart
         </button>

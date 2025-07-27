@@ -1,12 +1,11 @@
-2025-07-21 02:37:39,239 - ERROR - [views] - Error fetching cart items for user reem: Got AttributeError when attempting to get a value for field `item_description` on serializer `TofaProductsRepositorySeializer`.
-The serializer field might be named incorrectly and not match any attribute or key on the `TofaProductsOrder` instance.
-Original exception text was: 'TofaProductsOrder' object has no attribute 'item_description'.
-2025-07-21 02:52:02,838 - ERROR - [views] - Error deserializing cart item data: duplicate key value violates unique constraint "unique_item_incart"
-DETAIL:  Key (item_name_id, user_id, status, order_number)=(Cappuccino Caramel, 13, INCart_Pending, 0) already exists.
-
-2025-07-21 02:54:07,374 - ERROR - [views] - Error deserializing cart item data: duplicate key value violates unique constraint "unique_item_incart"
-DETAIL:  Key (item_name_id, user_id, status, order_number)=(Cappuccino Caramel, 13, INCart_Pending, 0) already exists.
-
-2025-07-21 04:08:57,148 - INFO - [views] - Cart item deleted successfully for user.
-2025-07-21 04:09:50,194 - INFO - [views] - Cart item deleted successfully for user.
-2025-07-21 21:31:33,747 - INFO - [views] - Cart submitted for preparation by reem with 3 items.
+2025-07-27 23:22:42,385 - ERROR - [views] - Failed to send Cart of user fady for details :UserServices.send_cart_to_kitchen() missing 1 required positional argument: 'table_number'
+2025-07-27 23:24:50,728 - ERROR - [views] - Failed to send Cart of user fady for details :UserServices.send_cart_to_kitchen() missing 1 required positional argument: 'table_number'
+2025-07-27 23:34:59,956 - ERROR - [views] - Failed to send Cart of user fady for details :UserServices.send_cart_to_kitchen() missing 1 required positional argument: 'table_number'
+2025-07-27 23:37:04,276 - ERROR - [services] - Failed to Assign Order, in items in the cart for user fady
+2025-07-27 23:37:04,276 - ERROR - [views] - Failed to send Cart of user fady for details :'QuerySet' object has no attribute 'save'
+2025-07-28 00:27:48,054 - ERROR - [views] - Failed to retrive bill details for fady, Details:Got AttributeError when attempting to get a value for field `item_name` on serializer `TofaProductsOrderSerializer`.
+The serializer field might be named incorrectly and not match any attribute or key on the `QuerySet` instance.
+Original exception text was: 'QuerySet' object has no attribute 'item_name'.
+2025-07-28 00:33:15,073 - ERROR - [views] - Failed to retrive bill details for fady, Details:Got AttributeError when attempting to get a value for field `item_name` on serializer `TofaProductsOrderSerializer`.
+The serializer field might be named incorrectly and not match any attribute or key on the `QuerySet` instance.
+Original exception text was: 'QuerySet' object has no attribute 'item_name'.

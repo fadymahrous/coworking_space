@@ -1,137 +1,343 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Kitchen War Room</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background: #f0f2f5;
-    }
+{% extends 'base.html' %}
+    <title>Kitchen War Room</title>
+{% block extrajava %}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 30px;
-    }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
 
-    .messages {
-      margin: 0 auto 20px;
-      max-width: 800px;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .message {
-      padding: 12px 20px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            letter-spacing: -1px;
+        }
 
-    .message.success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
-    }
+        .messages {
+            margin-bottom: 2rem;
+        }
 
-    .message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
-    }
+        .message {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+            color: white;
+        }
 
-    .message.info {
-      background-color: #d1ecf1;
-      color: #0c5460;
-      border: 1px solid #bee5eb;
-    }
+        .message.success {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+        }
 
-    .order-group {
-      background: white;
-      margin-bottom: 20px;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        .message.error {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
 
-    .order-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-    }
+        .message.info {
+            background: linear-gradient(135deg, #60a5fa, #3b82f6);
+        }
 
-    .order-items p {
-      margin: 5px 0;
-      font-size: 15px;
-    }
+        .message.warning {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
 
-    .finish-btn {
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: background 0.3s;
-    }
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
 
-    .finish-btn:hover {
-      background-color: #219150;
-    }
-  </style>
-</head>
-<body>
+        .order-group {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
 
-<h1>Kitchen War Room</h1>
+        .order-group::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
 
-<!-- Django Messages -->
-<div class="messages">
-  {% for message in messages %}
-    <div class="message {{ message.tags }}">{{ message }}</div>
-  {% endfor %}
-</div>
+        .order-group:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .order-group h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .order-group h3::before {
+            content: '#';
+            color: #667eea;
+            font-size: 1.2rem;
+        }
+
+        .order-group p {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            transition: all 0.2s ease;
+            line-height: 1.6;
+        }
+
+        .order-group p:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+
+        .item-name {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-count {
+            background: #667eea;
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 16px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+            margin-left: 0.5rem;
+        }
+
+        .item-details {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+
+        .item-details::before {
+            content: '📍 ';
+            margin-right: 0.25rem;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        button[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        button[type="submit"]:hover::before {
+            left: 100%;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .empty-state h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .empty-state p {
+            font-size: 1.125rem;
+            opacity: 0.7;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .orders-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .order-group {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+
+{%endblock%}
 
 
-{% regroup orders by table_number as table_groups %}
+{% block body %}
 
-{% for table in table_groups %}
-  <h3>Table Number: {{ table.grouper }}</h3>
+<div class="container">
+        <h1>Kitchen War Room</h1>
 
-  {% regroup table.list by order_number.id as order_groups %}
+        <!-- Django Messages -->
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
 
-  {% for order_group in order_groups %}
-    <h4>Order ID: {{ order_group.grouper }}</h4>
+        <div class="orders-grid">
+            {% regroup orders by order_number.pk as grouped_orders %}
 
-    <form method="post" action="{% url 'worker_home:ongoing_orders' %}">
-      {% csrf_token %}
-      <table border="1">
-        <thead>
-          <tr>
-            <th>Item Name</th>
-            <th>Count</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for order in order_group.list %}
-          <tr>
-            <td>{{ order.item_name }}</td>
-            <td>{{ order.count }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <input type="hidden" name="order_number" value="{{ order_group.grouper }}">
-      <button type="submit">Submit Order #{{ order_group.grouper }}</button>
-    </form>
-    <br>
-  {% endfor %}
-{% endfor %}
+            {% for group in grouped_orders %}
+                <form method="post" action="{% url 'worker_home:ongoing_orders' %}">
+                    {% csrf_token %}
+                    <div class="order-group">
+                        <h3>Order {{ group.grouper }}</h3>
+
+                      <div class="group-orders">
+                          {% for item in group.list %}
+                              <div class="order-item">
+                                  <div class="item-line">
+                                      <span class="item-name"><strong>{{ item.item_name }}</strong></span>
+                                      <span class="item-count">× {{ item.count }}</span>
+                                  </div>
+                                  <div class="item-details">
+                                      <small>
+                                          🪑 Table: {{ item.order_number.table_number }} |
+                                          👤 User: {{ item.order_number.user.username }}
+                                      </small>
+                                  </div>
+                              </div>
+                          {% endfor %}
+                      </div>
 
 
-</body>
-</html>
+                        <input type="hidden" name="order_number" value="{{ group.grouper }}">
+                        <button type="submit" name="action" value="complete">Mark Order as Done</button>
+                    </div>
+                </form>
+            {% empty %}
+                <div class="empty-state">
+                    <h2>🍽️ All Caught Up!</h2>
+                    <p>No pending orders at the moment. Great work!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Add some interactive functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const completeButtons = document.querySelectorAll('button[type="submit"]');
+            
+            completeButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const orderGroup = this.closest('.order-group');
+                    orderGroup.style.transform = 'scale(0.95)';
+                    orderGroup.style.opacity = '0.7';
+                    
+                    // Visual feedback
+                    setTimeout(() => {
+                        orderGroup.style.transform = '';
+                        orderGroup.style.opacity = '';
+                    }, 200);
+                });
+            });
+        });
+    </script>
+{%endblock%}

@@ -10,8 +10,8 @@ urlpatterns = [
     path('home/billview/',views.bill_view,name='billview'),
     path('home/opinion/',views.opinion_view,name='opinion'),
     path('home/cart/',views.cart_view,name='cart'),
-    path('api/foodviewapi/',views.FoodViewAPI.as_view(),name='foodviewapi'),
-    path('api/getbill/',views.GetBill.as_view(),name='getbill'),
-    path('api/cartviewapi/',views.CartViewAPI.as_view(),name='cartviewapi'),
-    path('api/cartviewsubmitapi/',views.CartViewSubmitAPI.as_view(),name='cartviewsubmitapi'),
+    path('v1/api/foodmenue/',views.FoodViewAPI.as_view(),name='api-foodmenue'),
+    path('v1/api/cart/',views.CartViewAPI.as_view(),name='api-cart'),
+    path('v1/api/order/',views.OrderAPI.as_view(),name='api-order'),
+    path('v1/api/bill/',views.BillAPI.as_view(),name='api-bill'),
 ]

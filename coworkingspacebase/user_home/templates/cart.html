@@ -157,26 +157,26 @@
       </tr>
     </thead>
     <tbody>
-      {% for order in items_in_cart %}
+      {% for item in items_in_cart %}
       <tr>
-        <td>{{ order.item_name.item_name }}</td>
-        <td>{{ order.item_name.price|multiply:order.count }}</td>
+        <td>{{ item.item_name.item_name }}</td>
+        <td>{{ item.item_name.price|multiply:item.count }}</td>
         <td>
           <form method="POST">
             {% csrf_token %}
             <div class="quantity-controls">
-              <button type="button" onclick="adjustAndSubmit('{{ order.pk }}', -1)">−</button>
-              <input type="number" name="quantity" id="qty-{{ order.pk }}" value="{{ order.count }}" min="1" />
-              <button type="button" onclick="adjustAndSubmit('{{ order.pk }}', 1)">+</button>
+              <button type="button" onclick="adjustAndSubmit('{{ item.pk }}', -1)">−</button>
+              <input type="number" name="quantity" id="qty-{{ item.pk }}" value="{{ item.count }}" min="1" />
+              <button type="button" onclick="adjustAndSubmit('{{ item.pk }}', 1)">+</button>
             </div>
-            <input type="hidden" name="order_id" value="{{ order.pk }}">
+            <input type="hidden" name="item_name" value="{{ item.item_name }}">
             <input type="hidden" name="action" value="update">
           </form>
         </td>
         <td>
           <form method="POST">
             {% csrf_token %}
-            <input type="hidden" name="order_id" value="{{ order.pk }}">
+            <input type="hidden" name="item_name" value="{{ item.item_name }}">
             <button type="submit" name="action" value="remove" class="remove-btn">Remove</button>
           </form>
         </td>

@@ -180,6 +180,34 @@
     font-weight: 900;
   }
 
+.grand-total-button {
+    width: 100%;
+    padding: 16px;
+    text-align: center;
+    background-color: #4CAF50;
+    color: white;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: block;
+}
+
+.grand-total-button:hover {
+    background-color: #45a049;
+}
+
+.total-label {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.total-amount {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -290,14 +318,16 @@
     </div>
   {% endfor %}
 
-  <div class="grand-total">
-    <div class="total-label">Total Amount</div>
-    <div class="total-amount">€{{ total_bill_value }}</div>
-  </div>
-  <form method="POST">
-      {% csrf_token %}
-      <button type="submit" name="create_bill" value="True" class="submit-order-btn">Submit My Order</button>
-    </form>
+<form method="POST">
+    {% csrf_token %}
+    
+    <button type="submit" name="create_bill" value="True" class="grand-total-button">
+        <div class="total-label">Push to send to Cashier</div>
+        <div class="total-label">Total Amount:</div>
+        <div class="total-amount">€{{ total_bill_value }}</div>
+    </button>
+</form>
+
 
 </div>
 {%endblock%}
