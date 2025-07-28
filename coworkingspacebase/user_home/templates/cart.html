@@ -1,159 +1,492 @@
+{% extends 'base.html' %}
 {% load math_filters %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Your Shopping Cart</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+{% block extrajava%}
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
+    * {
       margin: 0;
-      padding: 30px;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
     }
 
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      color: #2c3e50;
+      color: white;
+      font-size: 2.5rem;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      font-weight: 700;
     }
 
     .messages {
       margin: 0 auto 20px;
-      max-width: 800px;
+      max-width: 1000px;
     }
 
     .message {
-      padding: 12px 20px;
-      border-radius: 6px;
-      margin-bottom: 10px;
-      font-weight: bold;
+      padding: 15px 25px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .message.success {
-      background-color: #d4edda;
-      color: #155724;
-      border: 1px solid #c3e6cb;
+      background: linear-gradient(135deg, #a4adac 0%, #a1a5a4 100%);
+      color: white;
+      border: none;
+    }
+
+    .message.success::before {
+      content: "✓";
+      font-size: 18px;
+      font-weight: bold;
     }
 
     .message.error {
-      background-color: #f8d7da;
-      color: #721c24;
-      border: 1px solid #f5c6cb;
+      background: linear-gradient(135deg, #a4a1a0 0%, #9d9b9b 100%);
+      color: white;
+      border: none;
+    }
+
+    .message.error::before {
+      content: "⚠";
+      font-size: 18px;
     }
 
     .cart-table {
       width: 100%;
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
       border-collapse: collapse;
-      margin-top: 20px;
       background: white;
-      border-radius: 8px;
+      border-radius: 15px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .cart-table th,
-    .cart-table td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
     }
 
     .cart-table th {
-      background-color: #3498db;
+      background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
       color: white;
+      padding: 20px 15px;
+      text-align: center;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      position: relative;
     }
 
+    .cart-table th::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00b894, #00cec9, #909497, #8b8a92);
+    }
+
+    .cart-table td {
+      padding: 20px 15px;
+      border-bottom: 1px solid #f1f2f6;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 16px;
+    }
+
+    .cart-table tbody tr {
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .cart-table tbody tr:hover {
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Item name styling */
+    .cart-table td:first-child {
+      font-weight: 600;
+      color: #2d3436;
+      font-size: 18px;
+      text-align: left;
+      padding-left: 25px;
+    }
+
+    /* Price styling */
+    .cart-table td:nth-child(2) {
+      font-weight: 700;
+      color: #00b894;
+      font-size: 20px;
+    }
+
+    .cart-table td:nth-child(2)::before {
+      content: "€";
+      margin-right: 2px;
+    }
+
+    /* Quantity controls */
     .quantity-controls {
       display: flex;
       justify-content: center;
       align-items: center;
+      gap: 12px;
     }
 
     .quantity-controls button {
-      width: 32px;
-      height: 32px;
-      font-size: 18px;
-      background-color: #ddd;
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #74b9ff 0%, #7c8083 100%);
+      color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 50%;
       cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(116, 185, 255, 0.3);
+    }
+
+    .quantity-controls button:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 6px 20px rgba(116, 185, 255, 0.4);
+    }
+
+    .quantity-controls button:active {
+      transform: translateY(-1px) scale(0.95);
     }
 
     .quantity-controls input {
-      width: 50px;
-      margin: 0 5px;
+      width: 70px;
+      height: 45px;
       text-align: center;
-      border: 1px solid #ccc;
-      border-radius: 4px;
+      border: 3px solid #ddd;
+      border-radius: 12px;
+      font-size: 18px;
+      font-weight: 600;
+      color: #2d3436;
+      transition: all 0.3s ease;
+      background: white;
     }
 
+    .quantity-controls input:focus {
+      outline: none;
+      border-color: #74b9ff;
+      box-shadow: 0 0 0 4px rgba(116, 185, 255, 0.2);
+      transform: scale(1.05);
+    }
+
+    /* Remove button */
     .remove-btn {
-      background-color: #e74c3c;
+      background: linear-gradient(135deg, #cac1bf 0%, #918e8e 100%);
       color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
+      padding: 12px 25px;
+      border-radius: 25px;
       cursor: pointer;
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(225, 112, 85, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
     }
 
+    .remove-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(225, 112, 85, 0.4);
+    }
+
+    .remove-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .remove-btn::before {
+      content: "🗑️";
+      font-size: 16px;
+    }
+
+    /* Empty cart styling */
+    .cart-table td[colspan="4"] {
+      padding: 60px 20px;
+      color: #636e72;
+      font-size: 20px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%);
+      position: relative;
+    }
+
+    .cart-table td[colspan="4"]::before {
+      content: "🛒";
+      font-size: 48px;
+      display: block;
+      margin-bottom: 15px;
+    }
+
+    /* Cart total */
     .cart-total {
-      margin-top: 30px;
-      text-align: right;
-      font-size: 1.2em;
-      font-weight: bold;
+      max-width: 1200px;
+      margin: 0 auto 30px auto;
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      color: white;
+      background: linear-gradient(135deg, #00b894 0%, #99a19f 100%);
+      padding: 20px 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
 
+    /* Bottom actions */
     .bottom-actions {
-      margin-top: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
     }
 
     .add-more-btn {
-      background-color: #3498db;
+      background: linear-gradient(135deg, #a29bfe 0%, #a7a6ad 100%);
       color: white;
-      padding: 10px 20px;
+      padding: 15px 30px;
       text-decoration: none;
-      border-radius: 6px;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .add-more-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(162, 155, 254, 0.4);
+      text-decoration: none;
+      color: white;
+    }
+
+    .add-more-btn::before {
+      content: "+";
+      font-size: 20px;
       font-weight: bold;
     }
 
     .submit-order-btn {
-      background-color: #f39c12;
+      background: linear-gradient(135deg, #fdcb6e 0%, #9f9c9c 100%);
       color: white;
-      padding: 10px 18px;
+      padding: 15px 30px;
       border: none;
-      border-radius: 6px;
-      font-weight: bold;
+      border-radius: 25px;
+      font-weight: 700;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(253, 203, 110, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .submit-order-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(253, 203, 110, 0.4);
+    }
+
+    .submit-order-btn::before {
+      content: "🚀";
+      font-size: 18px;
     }
 
     .bottom-actions input[type="number"] {
-      padding: 8px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 200px;
+      padding: 15px 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 25px;
+      width: 250px;
+      font-size: 16px;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.9);
+      color: #2d3436;
+      transition: all 0.3s ease;
+    }
+
+    .bottom-actions input[type="number"]:focus {
+      outline: none;
+      border-color: white;
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+      background: white;
+    }
+
+    .bottom-actions input[type="number"]::placeholder {
+      color: #636e72;
+    }
+
+    .bottom-actions form {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 20px;
+      }
+
+      .cart-table {
+        font-size: 14px;
+      }
+
+      .cart-table th,
+      .cart-table td {
+        padding: 12px 8px;
+      }
+
+      .cart-table td:first-child {
+        padding-left: 12px;
+        font-size: 16px;
+      }
+
+      .quantity-controls {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .quantity-controls button {
+        width: 35px;
+        height: 35px;
+      }
+
+      .quantity-controls input {
+        width: 60px;
+        height: 40px;
+      }
+
+      .bottom-actions {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .bottom-actions form {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .bottom-actions input[type="number"] {
+        width: 100%;
+      }
+
+      .add-more-btn,
+      .submit-order-btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .cart-total {
+        font-size: 1.5rem;
+        padding: 15px 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .cart-table th,
+      .cart-table td {
+        padding: 10px 5px;
+        font-size: 12px;
+      }
+
+      .remove-btn {
+        padding: 8px 15px;
+        font-size: 12px;
+      }
+
+      .quantity-controls button {
+        width: 30px;
+        height: 30px;
+        font-size: 16px;
+      }
+
+      .quantity-controls input {
+        width: 50px;
+        height: 35px;
+        font-size: 14px;
+      }
+    }
+
+    /* Animation for form submissions */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
+    .loading::after {
+      content: "⏳";
+      margin-left: 10px;
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: all 0.3s ease;
     }
   </style>
-</head>
-<body>
+{% endblock%}
 
-  <h1>Your Shopping Cart</h1>
+
+
+{% block body %}
+
+  <h1>Your Food Cart</h1>
+
   <!-- Cart Table -->
   <table class="cart-table">
     <thead>
       <tr>
-        <th>Item</th>
-        <th>Total Price (€)</th>
-        <th>Quantity</th>
-        <th>Remove</th>
+        <th>🍽️ Item</th>
+        <th>💰 Total Price</th>
+        <th>🕧 Quantity</th>
+        <th>🗑️ Remove</th>
       </tr>
     </thead>
     <tbody>
@@ -170,7 +503,6 @@
               <button type="button" onclick="adjustAndSubmit('{{ item.pk }}', 1)">+</button>
             </div>
             <input type="hidden" name="item_name" value="{{ item.item_name }}">
-            <input type="hidden" name="action" value="update">
           </form>
         </td>
         <td>
@@ -183,26 +515,31 @@
       </tr>
       {% empty %}
       <tr>
-        <td colspan="4">Your cart is empty.</td>
+        <td colspan="4">Your cart is empty. Start adding some delicious items!</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 
   <!-- Total Price -->
+  {% if total_price %}
   <div class="cart-total">
-    Total: €{{ total_price }}
+    💿 Total: €{{ total_price }}
   </div>
+  {% endif %}
 
   <!-- Bottom Actions -->
   <div class="bottom-actions">
-    <a href="{% url 'user_home:home' %}" class="add-more-btn">+ Add More Items</a>
+    <a href="{% url 'user_home:menue' %}" class="add-more-btn">Add More Items</a>
 
-    <form method="POST" style="display: flex; gap: 10px; align-items: center;">
+    {% if items_in_cart %}
+    <form method="POST">
       {% csrf_token %}
-      <input type="number" name="table_number" placeholder="Enter table number" required min="1">
-      <button type="submit" name="action" value="execute" class="submit-order-btn">Submit My Order</button>
+      <input type="number" name="table_number" placeholder="🪑 Enter table number" required min="1">
+      <input type="hidden" name="action" value="execute">
+      <button type="submit" class="submit-order-btn">Submit My Order</button>
     </form>
+    {% endif %}
   </div>
 
   <!-- JavaScript: Adjust and Submit -->
@@ -214,13 +551,28 @@
       if (newValue < 1) newValue = 1;
       input.value = newValue;
 
-      // Find the closest form and submit
+      // Visual feedback
+      input.style.transform = 'scale(1.1)';
+      input.style.borderColor = '#00b894';
+
+      setTimeout(() => {
+        input.style.transform = 'scale(1)';
+        input.style.borderColor = '#ddd';
+      }, 200);
+
       const form = input.closest('form');
+
+      // Inject hidden action input
+      const hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = 'action';
+      hidden.value = 'update';
+      form.appendChild(hidden);
+
       setTimeout(() => {
         form.submit();
       }, 50);
     }
   </script>
 
-</body>
-</html>
+{% endblock %}

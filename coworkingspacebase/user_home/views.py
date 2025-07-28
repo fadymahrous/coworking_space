@@ -88,7 +88,7 @@ def food_view(request):
 @login_required(login_url='/login')
 def cart_view(request):
     if request.method == 'POST':
-        action = request.POST.get('action', '').lower()
+        action = request.POST.get('action')
         item_name = request.POST.get('item_name')
         quantity = request.POST.get('quantity')
         table_number = request.POST.get('table_number')
@@ -100,7 +100,7 @@ def cart_view(request):
         if not item_name and action in ['update', 'remove']:
             messages.error(request, "No item selected")
             return redirect('/home/cart/')
-
+        print(f"====>{table_number} ++ {action}")
         try:
             if action == 'update' and quantity:
                 UserServices.add_item_to_cart(request.user, item_name, quantity, False)
@@ -109,6 +109,7 @@ def cart_view(request):
                 UserServices.remove_item_from_cart(request.user, item_name)
                 messages.info(request, "Item removed successfully")
             elif action == 'execute' and table_number:
+                print(f"====>{table_number}")
                 UserServices.send_cart_to_kitchen(request.user, table_number)
                 messages.info(request, "Order sent to kitchen")
         except Exception as e:

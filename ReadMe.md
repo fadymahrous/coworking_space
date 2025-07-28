@@ -2,6 +2,9 @@
 
 The goal of this Django project is to develop a robust backend system for a co-working space application. The backend supports four main components:
 
+![alt text](Screen_shot_samples/login.png)
+![alt text](Screen_shot_samples/worker_kitchen.png) ![alt text](Screen_shot_samples/user_Cart.png) ![alt text](Screen_shot_samples/user_home.png) ![alt text](Screen_shot_samples/user_menue.png) ![alt text](Screen_shot_samples/worker_home.png)
+
 ### 1. Account Management
 
 Provides user registration, login, and authentication via both a web interface and APIs secured with JWT.
